@@ -1,0 +1,66 @@
+name: wasix
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Init required submodules
+        run: git submodule update --init extra/wolfssl/wolfssl libmariadb
+
+      - name: Setup wasixcc
+        uses: wasix-org/wasixcc@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build WASIX module
+        run: ./wasm/build-wasix.sh
+
+      - name: Setup Wasmer
+        run: |
+          curl https://get.wasmer.io -sSfL | sh
+          echo "$HOME/.wasmer/bin" >> "$GITHUB_PATH"
+
+      - name: Smoke test
+        # Opens the embedded server on a host-mounted datadir, runs a few
+        # statements (InnoDB DDL/DML) and checks the JSON envelopes.
+        run: |
+          mkdir -p wasix-ci/data wasix-ci/tmp
+          wasmer run wasm/dist/lite4mariadb.wasix.wasm \
+            --volume "$PWD/wasix-ci/data:/mariadb" \
+            --volume "$PWD/wasix-ci/tmp:/tmp" \
+            -- "SELECT 1+1 AS two" \
+               "CREATE TABLE t1 (id INT PRIMARY KEY, name VARCHAR(50))" \
+               "INSERT INTO t1 VALUES (1,'wasix'),(2,'ci')" \
+               "SELECT * FROM t1 ORDER BY id" | tee smoke.out
+          grep -q '"two":"2"' smoke.out
+          grep -q '"affected":2' smoke.out
+          grep -q '"name":"wasix"' smoke.out
+          grep -q '"name":"ci"' smoke.out
+
+      - name: Persistence check
+        # Second process must see the data written by the first one.
+        run: |
+          wasmer run wasm/dist/lite4mariadb.wasix.wasm \
+            --volume "$PWD/wasix-ci/data:/mariadb" \
+            --volume "$PWD/wasix-ci/tmp:/tmp" \
+            -- "SELECT count(*) AS n FROM t1" | tee persist.out
+          grep -q '"n":"2"' persist.out
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lite4mariadb-wasix
+          path: wasm/dist/lite4mariadb.wasix.wasm
+          retention-days: 14
