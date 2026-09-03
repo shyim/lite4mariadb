@@ -106,13 +106,13 @@ static int is_binary_field(const MYSQL_FIELD *f)
   }
 }
 
-static int buf_put_json_str(buf_t *b, const char *s)
+static int buf_put_json_strn(buf_t *b, const char *s, unsigned long len)
 {
   if (buf_putc(b, '"'))
     return -1;
-  for (; *s; s++)
+  for (unsigned long i= 0; i < len; i++)
   {
-    unsigned char c= (unsigned char)*s;
+    unsigned char c= (unsigned char)s[i];
     if (c == '"' || c == '\\')
     {
       if (buf_putc(b, '\\') || buf_putc(b, (char)c))
@@ -144,6 +144,11 @@ static int buf_put_json_str(buf_t *b, const char *s)
       return -1;
   }
   return buf_putc(b, '"');
+}
+
+static int buf_put_json_str(buf_t *b, const char *s)
+{
+  return buf_put_json_strn(b, s, (unsigned long) strlen(s));
 }
 
 static char *dup_str(const char *s)
@@ -266,7 +271,9 @@ static int serialize_result_into(MYSQL *m, buf_t *b)
             buf_putc(b, '}'))
           goto oom;
       }
-      else if (buf_put_json_str(b, row[i]))
+      else if (buf_put_json_strn(b, row[i],
+                                 lengths ? lengths[i]
+                                         : (unsigned long) strlen(row[i])))
         goto oom;
     }
     if (buf_putc(b, '}'))
