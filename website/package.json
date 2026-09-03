@@ -1,0 +1,21 @@
+{
+  "name": "lite4mariadb-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-engine.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/copy-engine.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "preview:cf": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "lite4mariadb": "^0.1.0"
+  },
+  "devDependencies": {
+    "astro": "^7.2.10",
+    "wrangler": "^4.128.0"
+  }
+}

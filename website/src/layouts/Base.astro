@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Lock the page to the viewport (the shell page). */
+  fixed?: boolean;
+}
+
+const {
+  title,
+  description = 'A full MariaDB embedded server with InnoDB that runs in the browser and Node.js, with a PGlite-style JavaScript API.',
+  fixed = false,
+} = Astro.props;
+// build.format 'file' leaves .html in the pathname; the worker serves clean routes.
+const canonical = new URL(Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, ''), Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23ec3013'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" crossorigin="anonymous" />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class:list={['page', { fixed }]}>
+      <Nav><slot name="nav" /></Nav>
+      <slot />
+    </div>
+  </body>
+</html>
+
+<style>
+  .page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+  .page.fixed { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+</style>

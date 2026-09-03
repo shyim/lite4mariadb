@@ -1,0 +1,97 @@
+---
+import Base from '../layouts/Base.astro';
+import CodeSection from '../components/CodeSection.astro';
+import CopyInstall from '../components/CopyInstall.astro';
+---
+<Base title="lite4mariadb — MariaDB, compiled to WebAssembly">
+  <main>
+    <section class="hero">
+      <h1 class="display">
+        <span>MariaDB, compiled to WebAssembly.</span>
+        <span>Real InnoDB. No server.</span>
+      </h1>
+      <p class="sub">A full MariaDB embedded server that runs in the browser and in Node.js, with a PGlite-style JavaScript API. Transactions, foreign keys, window functions, CTEs, JSON and vector search — in one ~17 MB module.</p>
+      <div class="actions">
+        <CopyInstall />
+        <a class="btn btn-ghost" href="/repl">Open the shell →</a>
+        <a class="btn btn-ghost" href="https://github.com/shyim/lite4mariadb" target="_blank" rel="noreferrer">Star on GitHub</a>
+      </div>
+    </section>
+
+    <section class="facts" aria-label="Highlights">
+      <div><span class="kicker">Engine</span><strong>InnoDB</strong><p>Transactions, foreign keys, crash recovery. The real storage engine, not a shim.</p></div>
+      <div><span class="kicker">Storage</span><strong>memory · file · idb</strong><p>Ephemeral by default, a directory in Node, IndexedDB in the browser. Snapshots as gzipped tar.</p></div>
+      <div><span class="kicker">SQL</span><strong>MariaDB 13.1</strong><p>Window functions, CTEs, JSON functions and native vector search, unchanged.</p></div>
+      <div><span class="kicker">Runtime</span><strong>Browser + Node ≥ 18</strong><p>Main thread or a worker with the same API. One .wasm module plus a thin wrapper.</p></div>
+    </section>
+
+    <section class="code">
+      <CodeSection variant="grid" />
+    </section>
+
+    <section class="banner">
+      <h2>Try it without installing anything.</h2>
+      <p>The shell runs the actual MariaDB build in your tab. Nothing leaves the browser.</p>
+      <a class="btn btn-primary" href="/repl?run=example">Open the shell</a>
+    </section>
+  </main>
+  <footer>
+    <span>lite4mariadb is MariaDB Server compiled to WebAssembly. Licensed GPL-2.0-only.</span>
+    <a href="https://github.com/shyim/lite4mariadb/blob/main/wasm/COPYING" target="_blank" rel="noreferrer">COPYING</a>
+  </footer>
+</Base>
+
+<style>
+  main { flex: 1; }
+
+  .hero {
+    background: var(--color-accent); color: var(--color-bg);
+    padding: 64px var(--gutter) 56px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .display {
+    font-size: clamp(44px, 6vw, 84px); line-height: 1.06; letter-spacing: -0.02em;
+    margin: 0 0 0 -0.058em;
+  }
+  .display span { display: block; }
+  .sub { margin: 0; font-size: 18px; line-height: 1.65; max-width: 60ch; color: var(--color-bg); }
+  .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero .btn-primary { background: var(--color-bg); color: var(--color-accent); }
+  .hero .btn-primary:hover { background: var(--color-accent-100); color: var(--color-accent); }
+  .hero .btn-ghost { color: var(--color-bg); }
+  .hero .btn-ghost:hover { background: color-mix(in srgb, var(--color-bg) 14%, transparent); color: var(--color-bg); }
+
+  .facts {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-bottom: 2px solid var(--color-divider);
+    padding-inline: var(--gutter);
+  }
+  .facts > div { padding: 28px 24px 28px 0; display: flex; flex-direction: column; gap: 6px; }
+  .facts > div + div { border-left: 2px solid var(--color-divider); padding-left: 24px; }
+  .facts strong { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; letter-spacing: -0.015em; }
+  .facts p { margin: 0; font-size: 13.5px; line-height: 1.5; color: color-mix(in srgb, var(--color-text) 70%, transparent); }
+
+  .code { padding: 40px var(--gutter) 56px; }
+
+  .banner {
+    border-top: 2px solid var(--color-divider);
+    padding: 56px var(--gutter);
+    display: flex; flex-direction: column; gap: 12px; align-items: flex-start;
+  }
+  .banner h2 { font-size: clamp(28px, 3.4vw, 40px); letter-spacing: -0.02em; margin: 0; }
+  .banner p { margin: 0 0 8px; font-size: 16px; max-width: 50ch; color: color-mix(in srgb, var(--color-text) 75%, transparent); }
+
+  footer {
+    border-top: 2px solid var(--color-divider);
+    padding: 20px var(--gutter);
+    display: flex; gap: 16px; flex-wrap: wrap; justify-content: space-between;
+    font-size: 12.5px; color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  }
+
+  @media (max-width: 880px) {
+    .hero, .code, .banner, footer { padding-inline: 20px; }
+    .facts { grid-template-columns: 1fr; padding-inline: 20px; }
+    .facts > div { padding: 20px 0; }
+    .facts > div + div { border-left: 0; border-top: 1px solid var(--color-divider); padding-left: 0; }
+  }
+</style>

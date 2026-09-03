@@ -1,0 +1,17 @@
+// Cloudflare Workers static-asset deployment of the built site.
+// `npm run deploy` builds dist/ and uploads it; public/_headers adds the
+// COOP/COEP headers the WASM shell needs.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lite4mariadb-website",
+  "compatibility_date": "2026-09-01",
+  // Custom domain: Cloudflare creates the DNS record and certificate on deploy.
+  // The shyim.de zone must live in the same Cloudflare account.
+  "routes": [{ "pattern": "lite4mariadb.shyim.de", "custom_domain": true }],
+  "workers_dev": false,
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash"
+  }
+}

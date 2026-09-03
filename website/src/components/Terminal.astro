@@ -1,0 +1,90 @@
+---
+/** The SQL shell. Fills whatever grid cell or flex slot it is placed in. */
+---
+<section class="term" aria-label="SQL shell" data-shell>
+  <div class="term-head">
+    <span class="mark"></span>
+    <span class="term-title">MariaDB [test]</span>
+    <span class="term-storage" data-storage></span>
+    <span class="term-tools">
+      <button type="button" class="term-btn" data-run-example>Run example</button>
+      <button type="button" class="term-btn" data-clear>Clear</button>
+    </span>
+  </div>
+  <div class="term-log" data-log>
+    <div data-lines aria-live="polite"></div>
+    <div class="term-prompt">
+      <span aria-hidden="true">MariaDB [test]&gt;</span>
+      <textarea class="term-input" data-input rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="loading…" aria-label="SQL statement" disabled></textarea>
+    </div>
+  </div>
+  <div class="term-foot">
+    <span>Enter runs a statement ending in ;</span>
+    <span>Shift+Enter for a new line</span>
+    <span>↑ ↓ history</span>
+    <span class="engine" data-engine></span>
+  </div>
+</section>
+
+<script>
+  import { mountShell } from '../lib/shell.js';
+  for (const el of document.querySelectorAll('[data-shell]')) mountShell(el);
+</script>
+
+<style>
+  .term {
+    min-height: 0; min-width: 0;
+    display: flex; flex-direction: column;
+    background: var(--color-text); color: var(--color-bg);
+    font-family: var(--font-mono); font-size: 13px; line-height: 20px;
+  }
+  .term-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 20px; border-bottom: 1px solid var(--color-neutral-800); flex: none;
+  }
+  .term-title { font-family: var(--font-heading); font-weight: 800; font-size: 13px; letter-spacing: 0.02em; }
+  .term-storage { color: var(--color-neutral-500); }
+  .term-tools { margin-left: auto; display: flex; gap: 4px; }
+  .term-btn {
+    font: inherit; font-size: 12px; cursor: pointer;
+    background: transparent; border: 1px solid var(--color-neutral-700); color: var(--color-bg);
+    padding: 4px 10px; border-radius: var(--radius-md);
+  }
+  .term-btn:hover { border-color: var(--color-bg); }
+  .term-btn:active { background: var(--color-neutral-900); }
+  .term-btn:focus-visible { outline-color: var(--color-accent-400); }
+
+  .term-log { flex: 1; min-height: 0; overflow: auto; padding: 16px 20px 8px; cursor: text; }
+  .term-log::-webkit-scrollbar { width: 10px; }
+  .term-log::-webkit-scrollbar-thumb { background: var(--color-neutral-700); }
+  .term-log :global(pre) { margin: 0; font: inherit; white-space: pre-wrap; word-break: break-word; }
+  .term-log :global([data-kind="in"]) { color: var(--color-bg); }
+  .term-log :global([data-kind="out"]) { color: var(--color-neutral-200); }
+  .term-log :global([data-kind="ok"]) { color: var(--color-neutral-400); }
+  .term-log :global([data-kind="err"]) { color: var(--color-accent); }
+  .term-log :global([data-kind="note"]) { color: var(--color-neutral-500); }
+
+  .term-prompt {
+    display: grid; grid-template-columns: auto 1fr; gap: 0 8px;
+    margin-top: 4px; align-items: start;
+  }
+  .term-prompt > span { color: var(--color-accent); white-space: pre; user-select: none; }
+  .term-input {
+    font: inherit; color: var(--color-bg); background: transparent;
+    border: 0; padding: 0; margin: 0; width: 100%; resize: none; display: block;
+    caret-color: var(--color-accent);
+  }
+  .term-input:focus { outline: none; }
+  .term-input::placeholder { color: var(--color-neutral-600); }
+
+  .term-foot {
+    flex: none; display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 6px 20px; border-top: 1px solid var(--color-neutral-800);
+    font-size: 11px; color: var(--color-neutral-500);
+  }
+  .engine { margin-left: auto; }
+
+  @media (max-width: 880px) {
+    .term-head, .term-log, .term-foot { padding-inline: 16px; }
+  }
+</style>

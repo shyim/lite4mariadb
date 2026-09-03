@@ -1,0 +1,14 @@
+# Cross-origin isolation: the MariaDB WASM build uses pthreads, which need
+# SharedArrayBuffer. Applies to every page and asset on this origin.
+/*
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+  X-Content-Type-Options: nosniff
+
+# Hashed Astro assets never change under the same name.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The engine changes only when the lite4mariadb dependency is bumped.
+/engine/*
+  Cache-Control: public, max-age=86400

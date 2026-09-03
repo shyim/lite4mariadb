@@ -1,0 +1,77 @@
+---
+import { API, SAMPLES } from '../lib/samples.js';
+
+interface Props {
+  /** `grid` puts usage and API side by side; `stack` puts them in a column. */
+  variant?: 'grid' | 'stack';
+}
+const { variant = 'stack' } = Astro.props;
+const entries = Object.entries(SAMPLES);
+---
+<div class:list={['codegrid', variant]} data-samples>
+  <div class="sample">
+    <div class="sample-head">
+      <span class="kicker">Usage</span>
+      <div class="seg" role="radiogroup" aria-label="Runtime">
+        {entries.map(([key, s], i) => (
+          <label class="seg-opt"><input type="radio" name="sample" value={key} checked={i === 0} />{s.label}</label>
+        ))}
+      </div>
+    </div>
+    {entries.map(([key, s], i) => (
+      <div class="sample-body" data-sample={key} hidden={i !== 0}>
+        <pre>{s.code}</pre>
+        <p class="sample-note">{s.note}</p>
+      </div>
+    ))}
+  </div>
+  <div class="api">
+    <span class="kicker">API</span>
+    <table class="table">
+      <tbody>
+        {API.map(([sig, desc]) => (
+          <tr><td>{sig}</td><td>{desc}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  for (const root of document.querySelectorAll('[data-samples]')) {
+    root.addEventListener('change', (e) => {
+      const input = e.target as HTMLInputElement;
+      if (input.name !== 'sample') return;
+      for (const body of root.querySelectorAll<HTMLElement>('[data-sample]')) {
+        body.hidden = body.dataset.sample !== input.value;
+      }
+    });
+  }
+</script>
+
+<style>
+  .codegrid { display: flex; flex-direction: column; gap: 28px; }
+  .codegrid.grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 64px; }
+  .sample { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .sample-body { display: flex; flex-direction: column; gap: 16px; }
+  .sample-body[hidden] { display: none; }
+  .sample-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  pre {
+    margin: 0; padding: 16px 20px;
+    background: var(--color-surface); border-top: 2px solid var(--color-divider);
+    font-family: var(--font-mono); font-size: 12.5px; line-height: 20px;
+    overflow: auto; white-space: pre; color: var(--color-text);
+  }
+  .sample-note {
+    margin: 0; font-size: 13px; line-height: 20px; max-width: 60ch;
+    color: color-mix(in srgb, var(--color-text) 70%, transparent);
+  }
+  .api { min-width: 0; }
+  .api .kicker { display: block; margin-bottom: 12px; }
+  .api .table { font-family: var(--font-mono); font-size: 12.5px; }
+  .api td:first-child { white-space: nowrap; font-weight: 600; }
+  .api td:last-child { font-family: var(--font-body); font-size: 13px; }
+  @media (max-width: 880px) {
+    .codegrid.grid { display: flex; flex-direction: column; }
+  }
+</style>
